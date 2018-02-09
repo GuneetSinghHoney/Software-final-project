@@ -82,4 +82,36 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 		return false;
 	}
 
+	@Override
+	public balanceBean getBalanceInfo(String AccountNumber) {
+		
+		try {
+			 conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			
+			
+			stmt = conn.createStatement();
+		 
+		ResultSet rs = 	stmt.executeQuery("SELECT * FROM bank.balance where account= '"+AccountNumber+"'");
+		System.out.println("getting balance from database");
+		
+
+		rs.next();
+		
+		balanceBean bal = new balanceBean();
+		
+		bal.setAccount(AccountNumber);
+		bal.setCredit(rs.getString("credit"));
+		bal.setCurrent(rs.getString("current"));
+		bal.setLimit(rs.getString("limit"));
+		bal.setSaving(rs.getString("saving"));
+
+		
+		return bal;
+		}catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

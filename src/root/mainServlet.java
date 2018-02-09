@@ -1,16 +1,20 @@
 package root;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import DAO.AllDatabaseMethodsToBeImplemented;
+import DAO.balanceBean;
 import DAO.mySql;
 
 /**
@@ -33,10 +37,78 @@ public class mainServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		
+		System.out.println("get");
+		String Action = request.getParameter("action");
+
 		//checking 
+		if(Action.equals("forget"))
+		{
+			// Password Recovery
+			 response.getWriter().println("Password Recovery");
+		}
+		
+		else if(Action.equals("account"))
+		{
+			//My Account
+			System.out.println("My Account check");
+			
+			//connecting to database and collecting the information
+			//Saving, Current, Credit, Balance 
+			String account = request.getSession().getAttribute("account").toString();
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+					
+			//Adding the collected data to the sessions and Request scope
+			
+				request.setAttribute("current", bean.getCurrent());
+				request.setAttribute("saving", bean.getSaving());
+				request.setAttribute("limit", bean.getLimit());
+				request.setAttribute("credit", bean.getCredit());
 
+				//Calculating the balance;
+				
+				double finalBalance = ((Double.parseDouble(bean.getCurrent()))+(Double.parseDouble(bean.getSaving()))) -
+						Double.parseDouble(bean.getCredit());	
+						
+						
+						System.out.println(bean.toString());
+						System.out.println("final bal = "+finalBalance+"");
+						
+				request.setAttribute("balance", finalBalance);
+			
+			//Dispatching Request.
+			
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Account.jsp");
+			disp.forward(request, response);
+			}
+			//try end
+			catch(Exception e)
+			{
+				//catch for the account info getting database connection try
+				System.out.println("Error !");
+			}
+		}
+		else if(Action.equals("transfer"))
+		{
+			//Transfer
 
+			System.out.println("Transfer check");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfer.jsp");
+			disp.forward(request, response);
+			
+		}
+		else if(Action.equals("settings"))
+		{
+			//Settings 
+
+			System.out.println("Settings check");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Settings.jsp");
+			disp.forward(request, response);
+		
+		}
+		
 	}
 
 	/**
@@ -74,7 +146,11 @@ public class mainServlet extends HttpServlet {
 		  		boolean status = obj.checkLogin(account, pass);
 		    	  if(status)
 		    	  {
-		    		  response.getWriter().println("Login Successfull");
+		    		  System.out.println("Logged Inn"+account);
+		    		  HttpSession sees = request.getSession();
+		    		  sees.setAttribute("account", account);
+		    		RequestDispatcher disp = request.getRequestDispatcher("Main/mainPage.jsp");
+		  			disp.forward(request, response);
 		    	  }
 		    	  else {
 		    		  response.getWriter().println("Login Failed");
@@ -84,12 +160,7 @@ public class mainServlet extends HttpServlet {
 			
 			
 		}
-		else if(Action.equals("forget"))
-		{
-			// Password Recovery
-			 response.getWriter().println("Password Recovery");
-		}
-		
+	
 	}
 
 }
