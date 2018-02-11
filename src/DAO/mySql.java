@@ -114,4 +114,36 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 		return null;
 	}
 
+	@Override
+	public boolean paybill(String savingOrCurrent, String AccountAmount,String CreditAmount, String accountNumber) {
+		 
+		try {
+			String query = "";
+			if(savingOrCurrent.equals("saving"))
+			{
+				query = "update bank.balance set saving='"+AccountAmount+"', credit='"+CreditAmount+"' where account='"+accountNumber+"'";
+			}
+			else 
+			{
+				query = "update bank.balance set current='"+AccountAmount+"', credit='"+CreditAmount+"' where account='"+accountNumber+"'";
+
+			}
+			
+		
+			 conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 stmt = conn.createStatement();
+			 return stmt.execute(query);
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean makeTransection(String accountNumberFrom, String accountNumberToo, String amount, Date date) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -51,6 +51,7 @@
 <div id="menu">
     <ul>
         <li><a href="/CentennialBank/root?action=account">-My Account-</a></li>
+        <li><a href="/CentennialBank/root?action=pay">-Pay Bills-</a></li>
         <li><a href="/CentennialBank/root?action=user">-User-</a></li>
         <li><a href="/CentennialBank/root?action=transfer">-Transfers-</a></li>
         <li><a href="/CentennialBank/root?action=settings">-Settings-</a></li>

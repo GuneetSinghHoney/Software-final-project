@@ -46,7 +46,71 @@ public class mainServlet extends HttpServlet {
 			// Password Recovery
 			 response.getWriter().println("Password Recovery");
 		}
-		
+		else if(Action.equals("pay"))
+		{
+			//Pay Credit Bills.
+			
+			//My Account
+			System.out.println("My Account check");
+			
+			//connecting to database and collecting the information
+			//Saving, Current, Credit, Balance 
+			String account = request.getSession().getAttribute("account").toString();
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+					
+			//Adding the collected data to the sessions and Request scope
+			
+				request.setAttribute("current", bean.getCurrent());
+				request.setAttribute("saving", bean.getSaving());
+				request.setAttribute("limit", bean.getLimit());
+				request.setAttribute("credit", bean.getCredit());
+
+				//Calculating the balance;
+				
+				double finalBalance = ((Double.parseDouble(bean.getCurrent()))+(Double.parseDouble(bean.getSaving()))) -
+						Double.parseDouble(bean.getCredit());	
+						
+						
+						System.out.println(bean.toString());
+						System.out.println("final bal = "+finalBalance+"");
+						
+				request.setAttribute("balance", finalBalance);
+			}catch (Exception e) {
+			e.printStackTrace();
+			}
+			//Dispatching Request.
+			System.out.println("Pay Bills");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/pay.jsp");
+			disp.forward(request, response);
+			
+		}
+		else if(Action.equals("A2A"))
+		{
+			//Account to Account transfer
+			System.out.println("Account to Account");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfers/A2A.jsp");
+			disp.forward(request, response);
+			
+		}
+		else if(Action.equals("A2E"))
+		{
+			//Account to Email
+			System.out.println("Account to Email");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfers/A2E.jsp");
+			disp.forward(request, response);
+			
+		}
+		else if(Action.equals("C2S"))
+		{
+			//Between Account 
+			System.out.println("Account to other Account");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfers/C2S.jsp");
+			disp.forward(request, response);
+			
+		}
 		else if(Action.equals("account"))
 		{
 			//My Account
@@ -157,6 +221,76 @@ public class mainServlet extends HttpServlet {
 		    	  }
 		      }
 			 
+			
+			
+		}
+		
+		else if(Action.equals("paybill"))
+		{
+			//Pay Credit card bill
+
+			BigDecimal amount = new BigDecimal(request.getParameter("amount").toString());
+			String selection = request.getParameter("radios").toString();
+			String account = request.getSession().getAttribute("account").toString();
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+				BigDecimal current = new BigDecimal(bean.getCurrent());
+				BigDecimal saving = new BigDecimal(bean.getSaving());
+				BigDecimal credit  = new BigDecimal(bean.getCredit());
+				String error = null;
+				
+						
+				if(selection.equals("current"))
+				{
+					if(amount.compareTo(current) ==1)
+					{
+						//Error condition
+						error="Not Enough Balance in Current Account !";
+					}
+					else
+					{
+						//paybill
+						boolean check = sql.paybill("current", current.subtract(amount)+"",credit.subtract(amount)+"" , account);
+						System.out.println("Amount paid"+amount);
+					}
+				}
+				else
+				{if(amount.compareTo(saving) ==1)
+				{
+					//Error condition
+					error="Not Enough Balance in Saving Account !";
+				}
+				else
+				{
+					//paybill
+					boolean check = sql.paybill("saving", saving.subtract(amount)+"",credit.subtract(amount)+"" , account);
+					System.out.println("Amount paid "+amount);
+		
+				}
+					if(error==null)
+					{
+						RequestDispatcher disp = request.getRequestDispatcher("/Centennialbank/root?action=Account");
+						disp.forward(request, response);
+					}
+					else
+					{
+						request.setAttribute("error", error);
+						RequestDispatcher disp = request.getRequestDispatcher("/CentennialBank/root?action=pay");
+						disp.forward(request, response);
+					}
+					
+				}
+				
+				
+				
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			
 			
 			
 		}

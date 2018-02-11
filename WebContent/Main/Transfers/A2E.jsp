@@ -7,15 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-
-
-<a href="/CentennialBank/root?action=A2A"> Account To Acount </a><br>
-
-<a href="/CentennialBank/root?action=A2E"> Intrac (Email)  </a><br>
-
-<a href="/CentennialBank/root?action=C2S"> Between Accounts </a><br>
-
- 
-
+Account to Email
 </body>
 </html>
