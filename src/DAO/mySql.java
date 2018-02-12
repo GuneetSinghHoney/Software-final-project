@@ -1,5 +1,6 @@
 package DAO;
 
+import java.math.BigDecimal;
 import java.sql.*;
 
 
@@ -143,6 +144,70 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 	@Override
 	public boolean makeTransection(String accountNumberFrom, String accountNumberToo, String amount, Date date) {
 		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean accountNumberCheck(String AccountNumber) {
+
+		try {
+			 conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 stmt = conn.createStatement();
+			 ResultSet rs = 	stmt.executeQuery("SELECT * FROM bank.login where username='"+AccountNumber+"'");
+				System.out.println("account number checking");
+					
+				if(rs.next())
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				return false;
+	
+	}
+
+	@Override
+	public boolean payAccountToAccount(BigDecimal saving,BigDecimal current, String type, String accountNumberFrom, String accountNumberToo, BigDecimal amount)
+	{
+		try {
+			 conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 stmt = conn.createStatement();
+			 System.out.println("rs");
+			 ResultSet rs = stmt.executeQuery("SELECT current FROM bank.balance where account ='"+accountNumberToo+"'");
+			 rs.next();
+			 BigDecimal num = new BigDecimal(rs.getString(1).toString());
+			  System.out.println(num);
+			 num = num.add(amount);
+			 
+			 stmt.executeUpdate("update bank.balance set current='"+num.toString()+"' where account='"+accountNumberToo+"'");
+			 
+			 Statement st2 = stmt;
+			 if(type.equals("saving")) {
+				 num = saving.subtract(amount);
+				 System.out.println(num);
+			 st2.executeUpdate("update bank.balance set saving='"+num.toString()+"' where account= '"+accountNumberFrom+"'");
+			 }
+			 else {
+
+			 num = current.subtract(amount);
+			 st2.executeUpdate("update bank.balance set current='"+num.toString()+"' where account= '"+accountNumberFrom+"'");
+				 
+			 }
+			 
+			 return true;
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		 
 		return false;
 	}
 

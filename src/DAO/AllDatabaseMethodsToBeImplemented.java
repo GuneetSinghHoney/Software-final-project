@@ -1,5 +1,6 @@
 package DAO;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 
 public interface AllDatabaseMethodsToBeImplemented
@@ -15,4 +16,10 @@ public interface AllDatabaseMethodsToBeImplemented
 	
 	//Create a transaction for security and audit
 	public boolean makeTransection(String accountNumberFrom, String accountNumberToo, String amount , Date date);
+	
+	//Check if the Account number exists
+	public boolean accountNumberCheck(String AccountNumber);
+	
+	//Pay Account to Account
+	public boolean payAccountToAccount(BigDecimal saving, BigDecimal current, String AccountType, String accountNumberFrom, String accountNumberToo, BigDecimal amount);
 }

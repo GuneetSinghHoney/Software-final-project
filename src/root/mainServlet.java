@@ -91,6 +91,29 @@ public class mainServlet extends HttpServlet {
 		{
 			//Account to Account transfer
 			System.out.println("Account to Account");
+			//My Account
+		 
+			
+			//connecting to database and collecting the information
+			//Saving, Current, Credit, Balance 
+			String account = request.getSession().getAttribute("account").toString();
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+					
+			//Adding the collected data to the sessions and Request scope
+			System.out.println(bean.toString());
+				request.setAttribute("current", bean.getCurrent());
+				request.setAttribute("saving", bean.getSaving());
+				request.setAttribute("limit", bean.getLimit());
+				request.setAttribute("credit", bean.getCredit());
+
+				//Calculating the balance;
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfers/A2A.jsp");
 			disp.forward(request, response);
 			
@@ -224,7 +247,79 @@ public class mainServlet extends HttpServlet {
 			
 			
 		}
+		else if(Action.equals("A2A"))
+		{
+			//Account to Account Transfer
 		
+			boolean hasMoney = false;
+			boolean recvalidAccount = false;
+			BigDecimal current=null,saving=null,credit=null;
+
+			BigDecimal amount = new BigDecimal(request.getParameter("amount").toString());
+			String selection = request.getParameter("radios").toString();
+			String account = request.getSession().getAttribute("account").toString();
+			String rec = request.getParameter("rec").toString();
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+				current = new BigDecimal(bean.getCurrent());
+				 saving = new BigDecimal(bean.getSaving());
+				credit  = new BigDecimal(bean.getCredit());
+				String error = "";
+				
+				
+				
+				//------------------checking Balance-------------------:
+						
+				if(selection.equals("current"))
+				{
+					if(amount.compareTo(current) ==1)
+					{
+						//Error condition
+						error="Not Enough Balance in Current Account !";
+					}
+					else
+					{
+						hasMoney = true;
+					}
+				}
+				else
+				{if(amount.compareTo(saving) ==1)
+				{
+					//Error condition
+					error="Not Enough Balance in Saving Account !";
+				}
+				else
+				{
+					hasMoney = true;
+				}
+				}
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			//-----------------Balance Checked ---------------------------------------
+			
+			//-----------------Checking If the Receiver Account number Exists-----------------
+			mySql sql = mySql.getInstance();
+			boolean check = sql.accountNumberCheck(rec);
+			
+			if(check)
+			{
+				recvalidAccount = true;
+			}
+		
+			//---------------Account number checked-----------------------
+			
+			if(hasMoney&&recvalidAccount)
+			{
+				mySql sql1 = mySql.getInstance();
+				System.out.println(sql1.payAccountToAccount(saving, current, selection, account, rec, amount));
+			}
+			
+			
+		}		
 		else if(Action.equals("paybill"))
 		{
 			//Pay Credit card bill
