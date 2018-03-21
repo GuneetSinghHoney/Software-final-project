@@ -8,14 +8,17 @@
 </head>
 <body>
 
+<%@include file="header.jsp" %>
+<div id="layer5" style="position: absolute; width: 750px; height: 379px; z-index: 2; left: 138px; top: 128px; background-image:url('background.png')">
+<!-- #BeginEditable "content" -->
 
-<a href="/CentennialBank/root?action=A2A"> Account To Acount </a><br>
+<a href="/CentennialBank/root?action=A2A"> Account To Acount </a><br></br>
 
-<a href="/CentennialBank/root?action=A2E"> Intrac (Email)  </a><br>
+<a href="/CentennialBank/root?action=A2E"> Intrac (Email)  </a><br></br>
 
-<a href="/CentennialBank/root?action=C2S"> Between Accounts </a><br>
+<a href="/CentennialBank/root?action=C2S"> Between Accounts </a><br></br>
 
- 
+ </div>
 
 </body>
 </html>

@@ -211,4 +211,41 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 		return false;
 	}
 
+	@Override
+	public boolean betweenAccountsTransfer(BigDecimal amount, String AccountToPay, String AccountNumber) {
+	
+		try {
+			 conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 stmt = conn.createStatement();
+			 System.out.println("rs");
+			 
+			 ResultSet rs;
+			 BigDecimal saving,current;
+			 
+			 rs = stmt.executeQuery("SELECT saving,current FROM bank.balance where account ='"+AccountNumber+"'");
+			 rs.next();
+			 saving = new BigDecimal(rs.getString(1).toString());
+			 current = new BigDecimal(rs.getString(2).toString());
+			 System.out.println(saving +"   "+current);
+			 if(AccountToPay.equals("current"))
+			 {
+				 current = current.add(amount);
+				 saving = saving.subtract(amount);
+			 }
+			 else{
+				 saving = saving.add(amount);
+				 current = current.subtract(amount);
+			 }
+
+			 System.out.println(saving +"   "+current);
+			 stmt.executeUpdate("update bank.balance set current='"+current.toString()+"',saving='"+saving.toString()+"' where account='"+AccountNumber.toString()+"'");
+			 stmt.close();
+			 return true;
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

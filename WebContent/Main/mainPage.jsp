@@ -6,56 +6,71 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>Centennial Bank</title>
 
-<style type="text/css">
-
-#menu ul
-{
-    margin: 0px;
-    padding: 0px;
-    list-style-type: none;
-}
-
-#menu li
-{
-    list-style: none;
-}
-
-#menu a
-{
-    display: block;
-    width: 8em;
-    color: white;
-    background-color: #000099;
-    text-decoration: none;
-    text-align: center;
-}
-
-#menu a:hover
-{
-    background-color: #6666AA;
-}
-
-#menu li
-{
-    list-style: none;
-    float: left;
-    margin-right: 0.5em;
-}
-
-
-
-</style>
 
 </head>
 <body>
-<div id="menu">
-    <ul>
-        <li><a href="/CentennialBank/root?action=account">-My Account-</a></li>
-        <li><a href="/CentennialBank/root?action=pay">-Pay Bills-</a></li>
-        <li><a href="/CentennialBank/root?action=user">-User-</a></li>
-        <li><a href="/CentennialBank/root?action=transfer">-Transfers-</a></li>
-        <li><a href="/CentennialBank/root?action=settings">-Settings-</a></li>
-    </ul>
+<%@include file="header.jsp" %>
+<div id="layer5" style="position: absolute; width: 750px; height: 379px; z-index: 2; left: 138px; top: 128px; background-image:url('background.png')">
+<!-- #BeginEditable "content" -->
+
+	<%
+//Getting the data from the servlet.
+HttpSession s =(HttpSession) request.getSession();
+String AccountNumber = s.getAttribute("account").toString();
+
+String balance = request.getAttribute("balance").toString();
+String saving = request.getAttribute("saving").toString();
+String current = request.getAttribute("current").toString();
+String credit = request.getAttribute("credit").toString();
+
+%>
+ 
+
+<h1>Account Information:</h1>
+
+<table style="margin-left: 200px">
+
+<tr>
+<td>
+Saving 
+</td>
+<td>
+<%=saving%>
+</td>
+</tr>
+
+<tr>
+<td>
+Current
+</td>
+<td>
+<%=current%>
+</td>
+</tr>
+
+
+<tr>
+<td>
+Credit
+</td>
+<td>
+-<%=credit%>
+</td>
+</tr>
+
+
+
+<tr>
+<td>
+Balance
+</td>
+<td>
+<b><%=balance%></b>
+</td>
+</tr>
+
+
+</table>
 </div>
 </body>
 </html>

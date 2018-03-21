@@ -1,6 +1,7 @@
 package root;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,6 +46,12 @@ public class mainServlet extends HttpServlet {
 		{
 			// Password Recovery
 			 response.getWriter().println("Password Recovery");
+		}
+		else if(Action.equals("success"))
+		{
+			System.out.println("Successful !");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Success.jsp");
+			disp.forward(request, response);
 		}
 		else if(Action.equals("pay"))
 		{
@@ -129,7 +136,31 @@ public class mainServlet extends HttpServlet {
 		else if(Action.equals("C2S"))
 		{
 			//Between Account 
-			System.out.println("Account to other Account");
+			//Account to Account transfer
+			System.out.println("Between Accounts");
+			//My Account
+		 
+			
+			//connecting to database and collecting the information
+			//Saving, Current, Credit, Balance 
+			String account = request.getSession().getAttribute("account").toString();
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+					
+			//Adding the collected data to the sessions and Request scope
+			System.out.println(bean.toString());
+				request.setAttribute("current", bean.getCurrent());
+				request.setAttribute("saving", bean.getSaving());
+				request.setAttribute("limit", bean.getLimit());
+				request.setAttribute("credit", bean.getCredit());
+
+				//Calculating the balance;
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfers/C2S.jsp");
 			disp.forward(request, response);
 			
@@ -167,7 +198,7 @@ public class mainServlet extends HttpServlet {
 			
 			//Dispatching Request.
 			
-			RequestDispatcher disp = request.getRequestDispatcher("Main/Account.jsp");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/mainPage.jsp");
 			disp.forward(request, response);
 			}
 			//try end
@@ -236,8 +267,40 @@ public class mainServlet extends HttpServlet {
 		    		  System.out.println("Logged Inn"+account);
 		    		  HttpSession sees = request.getSession();
 		    		  sees.setAttribute("account", account);
+		    		//connecting to database and collecting the information
+		  			//Saving, Current, Credit, Balance 
+		  			
+		    		 
+		  			try {
+		  				mySql sql = mySql.getInstance();
+		  				balanceBean bean = sql.getBalanceInfo(account);
+		  				
+		  					
+		  			//Adding the collected data to the sessions and Request scope
+		  			
+		  				request.setAttribute("current", bean.getCurrent());
+		  				request.setAttribute("saving", bean.getSaving());
+		  				request.setAttribute("limit", bean.getLimit());
+		  				request.setAttribute("credit", bean.getCredit());
+
+		  				//Calculating the balance;
+		  				
+		  				double finalBalance = ((Double.parseDouble(bean.getCurrent()))+(Double.parseDouble(bean.getSaving()))) -
+		  						Double.parseDouble(bean.getCredit());	
+		  						
+		  						
+		  						System.out.println(bean.toString());
+		  						System.out.println("final bal = "+finalBalance+"");
+		  						
+		  				request.setAttribute("balance", finalBalance);
+		  			
+		  			//Dispatching Request.
 		    		RequestDispatcher disp = request.getRequestDispatcher("Main/mainPage.jsp");
 		  			disp.forward(request, response);
+		    	  }catch(Exception e)
+		  			{
+		    		 e.printStackTrace(); 
+		  			}
 		    	  }
 		    	  else {
 		    		  response.getWriter().println("Login Failed");
@@ -245,6 +308,86 @@ public class mainServlet extends HttpServlet {
 		      }
 			 
 			
+			
+		}
+		else if(Action.equals("C2S"))
+		{
+			// Between the Account transfer
+						
+			String accountToPay = "";
+			String accountFromPay= "";
+			BigDecimal amount;
+			boolean check = false;
+			//Get the From Account and the To Account
+			
+			accountToPay = request.getParameter("radios");
+			
+			if(accountFromPay.equals("saving"))
+			{
+				accountFromPay="current";
+			}
+			else
+			{
+				accountFromPay="saving";
+			}
+			
+			
+			//Get the amount 
+		
+			amount = new BigDecimal(request.getParameter("amount").toString());
+		System.out.println(amount);
+			
+			//validate the amount
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(request.getSession().getAttribute("account").toString());
+				BigDecimal amountfrom;
+				if(accountFromPay.equals("saving"))
+				{
+					amountfrom = new BigDecimal(bean.getSaving());
+				}
+				else
+				{
+					amountfrom = new BigDecimal(bean.getCurrent());
+				}
+				
+				if(amount.compareTo(amountfrom) == 1)
+				{
+					check = false;
+				}
+				else
+				{
+					check= true;
+				}
+			
+				
+				
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+						
+			
+			//if valid then transfer funds by calling the sql method
+			
+			System.out.println("Check "+check);
+			if(check)
+			{
+				mySql sql = mySql.getInstance();
+				sql.betweenAccountsTransfer(amount, accountToPay, request.getSession().getAttribute("account").toString());
+				RequestDispatcher disp = request.getRequestDispatcher("/CentennialBank/root?action=success");
+				disp.forward(request, response);
+			}
+			
+			
+			// else return to the same page saying error !
+			else
+			{
+				 PrintWriter pw = response.getWriter();
+				 pw.println("Error!");
+				 pw.close();
+				 
+			}
 			
 		}
 		else if(Action.equals("A2A"))

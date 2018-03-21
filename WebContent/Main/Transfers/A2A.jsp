@@ -7,6 +7,10 @@
 <title>A2A</title>
 </head>
 <body>
+<%@include file="/Main/header.jsp" %>
+<div id="layer5" style="position: absolute; width: 750px; height: 379px; z-index: 2; left: 138px; top: 128px; background-image:url('background.png')">
+<!-- #BeginEditable "content" -->
+
 <%
 //Getting the data from the servlet.
  
@@ -58,6 +62,6 @@ The Amount to be paid:
 </table>
 
 </form>
-
+</div>
 </body>
 </html>

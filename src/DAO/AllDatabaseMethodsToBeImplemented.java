@@ -22,4 +22,7 @@ public interface AllDatabaseMethodsToBeImplemented
 	
 	//Pay Account to Account
 	public boolean payAccountToAccount(BigDecimal saving, BigDecimal current, String AccountType, String accountNumberFrom, String accountNumberToo, BigDecimal amount);
+
+	//Pay Between Accounts
+	public boolean betweenAccountsTransfer(BigDecimal amount, String AccountToPay,String AccountNumber);
 }

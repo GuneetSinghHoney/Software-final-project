@@ -7,6 +7,10 @@
 <title>Pay Bills</title>
 </head>
 <body>
+<%@include file="header.jsp" %>
+<div id="layer5" style="position: absolute; width: 750px; height: 379px; z-index: 2; left: 138px; top: 128px; background-image:url('background.png')">
+<!-- #BeginEditable "content" -->
+
 <%
 //Getting the data from the servlet.
 HttpSession s =(HttpSession) request.getSession();
@@ -87,7 +91,9 @@ try{
 		error = "";
 	}
 }catch(Exception e){}%>
-}
+
 <h2 style="background-color: red;color: white;"><%=error%></h2>
+</div>
 </body>
+
 </html>
