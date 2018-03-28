@@ -1,5 +1,6 @@
 package DAO;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
 
@@ -25,4 +26,15 @@ public interface AllDatabaseMethodsToBeImplemented
 
 	//Pay Between Accounts
 	public boolean betweenAccountsTransfer(BigDecimal amount, String AccountToPay,String AccountNumber);
+	
+	//Sign Up new Account
+	String signup(String firstName, String lastName, java.util.Date dateOfBirth, String gender, String address,
+			String address2, String email, String phone, String password, InputStream photo);
+	
+	//get user information
+	userBean getUserInformation(String accountNumber);
+	
+	//add feedback
+	void feedback(String account, String feedback);
+	
 }

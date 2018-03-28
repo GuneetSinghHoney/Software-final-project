@@ -1,26 +1,34 @@
 package root;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
 import DAO.AllDatabaseMethodsToBeImplemented;
+import DAO.NewAccount;
 import DAO.balanceBean;
 import DAO.mySql;
+import DAO.userBean;
 
 /**
  * Servlet implementation class mainServlet
  */
+@MultipartConfig
 @WebServlet("/root")
 public class mainServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -46,6 +54,33 @@ public class mainServlet extends HttpServlet {
 		{
 			// Password Recovery
 			 response.getWriter().println("Password Recovery");
+		}
+		
+		else if(Action.equals("signup"))
+		{
+			//servlet 
+			
+			
+			System.out.println("SignUp !");
+			RequestDispatcher disp = request.getRequestDispatcher("Main/signup.jsp");
+			disp.forward(request, response);
+			
+		}
+		else if(Action.equals("user"))
+		{
+			//About User
+			mySql sql = mySql.getInstance();
+			
+		userBean currentUser = 
+		sql.getUserInformation(request.getSession().getAttribute("account").toString());
+			
+		request.setAttribute("user", currentUser);
+			
+		System.out.println("user Information !");
+		System.out.println(currentUser.toString());
+		RequestDispatcher disp = request.getRequestDispatcher("Main/User/user.jsp");
+		disp.forward(request, response);
+			
 		}
 		else if(Action.equals("success"))
 		{
@@ -310,6 +345,65 @@ public class mainServlet extends HttpServlet {
 			
 			
 		}
+		else if(Action.equals("signup"))
+		{
+
+			System.out.println("do Post");
+			String firstName = request.getParameter("firstName").toString();
+			String lastName = request.getParameter("lastName").toString();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String date = request.getParameter("dateOfBirth").toString();
+			System.out.println(date);
+			Date dateOfBirth = null;
+					try {
+						  dateOfBirth = sdf.parse(date);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			String gender = request.getParameter("gender").toString();		
+			String address = request.getParameter("address").toString();
+			String address2 = request.getParameter("address2").toString();
+			String email = request.getParameter("email").toString();
+			String phone = request.getParameter("phone").toString();
+			String password = request.getParameter("password").toString();
+			
+			request.setAttribute("checkValues", firstName + " " + lastName + " "  
+					+ dateOfBirth +" "+gender + " " + address + " "
+					+ address2 + " " + email + " " + phone + " " + password	);
+			System.out.println("Checkpoint");
+			
+			// obtains the upload file part in this multipart request
+			
+			InputStream inputStream = null; // input stream of the upload file
+			 
+			 
+	        Part filePart = request.getPart("photo");
+	        if (filePart != null) {
+	            // prints out some information for debugging
+	            System.out.println(filePart.getName());
+	            System.out.println(filePart.getSize());
+	            System.out.println(filePart.getContentType());
+	             
+	            // obtains input stream of the upload file
+	            inputStream = filePart.getInputStream();
+	        }
+	        mySql sql = mySql.getInstance();
+	        String account = sql.signup(firstName, lastName, dateOfBirth, gender, address, address2, email, phone, password, inputStream);
+
+	        //add these values to database and dispacth request ....
+	        
+	        if(account.equals("ohNo")) {
+	        	//error
+	        	System.out.println("Error !");
+	        }
+	        else {
+	        
+			RequestDispatcher disp = request.getRequestDispatcher("login/login.html");
+			disp.forward(request, response);
+	        }
+	        
+		}
 		else if(Action.equals("C2S"))
 		{
 			// Between the Account transfer
@@ -463,6 +557,22 @@ public class mainServlet extends HttpServlet {
 			
 			
 		}		
+		else if(Action.equals("feedback"))
+		{
+			String feedback = request.getParameter("feedback");
+			
+			System.out.println(feedback);
+			//add to database
+			mySql sql = mySql.getInstance();
+			sql.feedback(request.getSession().getAttribute("account").toString(), feedback);
+			
+			//response
+			PrintWriter pw = response.getWriter();
+			pw.println("Thankyou for the feedback, We will not change anything ~");
+			
+			pw.close();
+			
+		}
 		else if(Action.equals("paybill"))
 		{
 			//Pay Credit card bill

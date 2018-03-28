@@ -1,5 +1,6 @@
 package DAO;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.*;
 
@@ -33,7 +34,13 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 	   static final String USER = "root";
 	   static final String PASS = "1255";
 	//constructor;
-	  
+	
+	/* static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+		static String dbName = "bank";
+		static String USER = "bank";
+		static String PASS = "123456";
+		static String DB_URL = "jdbc:mysql://mysql8.db4free.net:3307";
+		static String driverName = "com.mysql.jdbc.Driver";*/
 
 
 		mySql()
@@ -247,5 +254,194 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 		}
 		return false;
 	}
+
+	@Override
+	public String signup(String firstName, String lastName, java.util.Date dateOfBirth, String gender, String address,
+			String address2, String email, String phone, String password, InputStream photo) {
+
+		
+		System.out.println("New User");	
+		
+		//Insert to database
+		try {
+			 conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 
+	         stmt = conn.createStatement();
+	         
+	         //adding data to Usertable table
+	         
+			 PreparedStatement pstmt = conn.prepareStatement("INSERT INTO `User`"
+			 		+ "(`FirstName`, `LastName`, `DateOfBirth`,`Gender`,"
+			 		+ "`Address1`,`Address2`,`Email`,`Phone`,`photo`,`Password`) "
+			 		+ " VALUES (?,?,?,?,?,?,?,?,?,?)");
+			 //Generate Random account number
+			 /*Random rand = new Random();
+			 Integer n = rand.nextInt(9999998) + 1;
+			 String account = n.toString();
+			 pstmt.setString(1,account ); .*/
+			 
+			 //Set variables in prepared statement
+			 pstmt.setString(1, firstName);
+			 pstmt.setString(2, lastName); 
+			 
+			 //convert util date to sql date
+			 java.sql.Date sqlDate = new java.sql.Date(dateOfBirth.getTime());
+			 pstmt.setDate(3, sqlDate);
+			 pstmt.setString(4, gender);
+			 pstmt.setString(5, address);
+			 pstmt.setString(6, address2);
+			 pstmt.setString(7, email);
+			 pstmt.setString(8, phone);
+			 pstmt.setBlob(9, photo);
+			 pstmt.setString(10, password);
+			 
+			 //Execute Insert
+			 System.out.println(pstmt.toString());
+			 pstmt.executeUpdate();
+			 System.out.println("execute");
+			 
+			 pstmt.close();
+			 //Getting account number
+			 pstmt = conn.prepareStatement("select account from `User` where"
+			 		+ "`FirstName`=? && `phone`=? && `Email`=? && `LastName`=?");
+				 	
+				  pstmt.setString(1, firstName);
+				  pstmt.setString(2, phone);
+				  pstmt.setString(3, email);
+				  pstmt.setString(4, lastName);
+				  
+				 ResultSet rs = pstmt.executeQuery();
+				 rs.next();
+				 String accountNumber = String.valueOf(rs.getInt(1));
+				 
+				 System.out.println("Account Number :" + accountNumber);
+			 //Adding vales to login table
+			 
+			 addLogin(accountNumber,password);
+			 addBalance(accountNumber);  
+			 return accountNumber;
+			 
+			 
+		}   catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "ohNos";
+	}
+
+	private void addBalance(String accountNumber) 
+	{
+		
+	 
+		String zero = "0";
+		 
+
+		try {
+			conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 
+	         stmt = conn.createStatement();
+	         
+	         //adding data to Usertable table
+	         
+			 PreparedStatement ps = conn.prepareStatement("INSERT INTO `balance`"
+			 		+ "(`account`, `saving`, `current`,`credit`,"
+			 		+ "`limit`) "
+			 		+ " VALUES (?,?,?,?,?)");
+			
+			 ps.setString(1, accountNumber);
+			 ps.setString(2, zero);
+			 ps.setString(3, zero);
+			 ps.setString(4, zero);
+			 ps.setString(5, zero);
+			 
+			 ps.executeUpdate();
+			System.out.println("balance updated !"+ps.toString());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		  
+		
+	}
+
+	private void addLogin(String accountNumber, String password)
+	{
+		String query = "insert into bank.login values('"+accountNumber+"','"+password+"')";
+
+		try {
+			conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			  stmt = conn.createStatement();
+			  
+			  stmt.execute(query);
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+      
+		
+	}
+
+	@Override
+	public userBean getUserInformation(String accountNumber) {
+		try {
+			conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 
+	        stmt = conn.createStatement();
+		
+	        String query = "select * from User where account ='"+accountNumber+"'";
+	        
+	        ResultSet rs =  stmt.executeQuery(query);
+	        
+	        rs.next();
+	        
+	        userBean user = new userBean();
+	        user.setAccount(accountNumber);
+	        user.setAddress1(rs.getString(rs.findColumn("Address1")));
+	        user.setAddress2(rs.getString(rs.findColumn("Address2")));
+	        user.setDob(rs.getDate(rs.findColumn("DateOfBirth")));
+	        user.setEmail(rs.getString(rs.findColumn("Email")));
+	        user.setFirstName(rs.getString(rs.findColumn("FirstName")));
+	        user.setGender(rs.getString(rs.findColumn("Gender")));
+	        user.setLastName(rs.getString(rs.findColumn("LastName")));
+	        user.setPhone(rs.getString(rs.findColumn("Phone")));
+	        
+	        
+	        return user;
+	        
+	        
+	        
+	        
+		
+		}catch(Exception e)
+		{
+			
+		}
+		return null;
+	}
+
+	@Override
+	public void feedback(String account, String feedback) {
+		 
+			String query = "insert into bank.feedback values('"+account+"','"+feedback+"')";
+		
+			try {
+				conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+				  stmt = conn.createStatement();
+				  
+				  stmt.execute(query);
+				
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+
+	 
 
 }
