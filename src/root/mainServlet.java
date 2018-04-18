@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -55,7 +56,17 @@ public class mainServlet extends HttpServlet {
 			// Password Recovery
 			 response.getWriter().println("Password Recovery");
 		}
-		
+		else if(Action.equals("contact"))
+		{
+			RequestDispatcher disp = request.getRequestDispatcher("Main/User/contact.jsp");
+			disp.forward(request, response);
+		}
+		else if(Action.equals("rec"))
+		{
+			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfers/rec.jsp");
+			disp.forward(request, response);
+			
+		}
 		else if(Action.equals("signup"))
 		{
 			//servlet 
@@ -68,8 +79,9 @@ public class mainServlet extends HttpServlet {
 		}
 		else if(Action.equals("user"))
 		{
-			//About User
-			mySql sql = mySql.getInstance();
+			
+		//About User
+		mySql sql = mySql.getInstance();
 			
 		userBean currentUser = 
 		sql.getUserInformation(request.getSession().getAttribute("account").toString());
@@ -164,6 +176,25 @@ public class mainServlet extends HttpServlet {
 		{
 			//Account to Email
 			System.out.println("Account to Email");
+			String account = request.getSession().getAttribute("account").toString();
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+					
+			//Adding the collected data to the sessions and Request scope
+			System.out.println(bean.toString());
+				request.setAttribute("current", bean.getCurrent());
+				request.setAttribute("saving", bean.getSaving());
+				request.setAttribute("limit", bean.getLimit());
+				request.setAttribute("credit", bean.getCredit());
+
+				//Calculating the balance;
+				
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 			RequestDispatcher disp = request.getRequestDispatcher("Main/Transfers/A2E.jsp");
 			disp.forward(request, response);
 			
@@ -573,6 +604,92 @@ public class mainServlet extends HttpServlet {
 			pw.close();
 			
 		}
+		else if(Action.equals("A2E"))
+		{
+			
+			boolean hasMoney = false;
+			 
+			BigDecimal current=null,saving=null,credit=null;
+
+			int amount = Integer.parseInt(request.getParameter("amount").toString());
+		 
+			String account = request.getSession().getAttribute("account").toString();
+			String phone = request.getParameter("phone").toString();
+			String password = request.getParameter("password").toString();
+			
+			
+			try {
+				mySql sql = mySql.getInstance();
+				balanceBean bean = sql.getBalanceInfo(account);
+				
+				current = new BigDecimal(bean.getCurrent());
+				 saving = new BigDecimal(bean.getSaving());
+				credit  = new BigDecimal(bean.getCredit());
+				String error = "";
+				
+				
+				
+				//------------------checking Balance-------------------:
+						
+			
+					if(new BigDecimal(amount+"").compareTo(current) ==1)
+					{
+						//Error condition
+						error="Not Enough Balance in Current Account !";
+					}
+					else
+					{
+						hasMoney = true;
+						
+					}
+				
+				
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			//-----------------Balance Checked ---------------------------------------
+			
+			if(hasMoney)
+			{
+				try {
+					mySql sql = mySql.getInstance();
+					sql.sendMoney(account, phone, password, amount);
+				}catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			RequestDispatcher disp = request.getRequestDispatcher("/Centennialbank/suc.jsp");
+			disp.forward(request, response);
+		}
+		
+		else if(Action.equals("rec"))
+		{
+		 String phone = request.getParameter("phone");
+			String password = request.getParameter("password");
+			String account = request.getSession().getAttribute("account").toString();
+			boolean check= false;
+			try {
+				mySql sql = mySql.getInstance();
+			check = 	sql.receiveMoney(account, password, phone);
+				
+				
+				
+			}catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+			PrintWriter pw = response.getWriter();
+			if(check) {
+			pw.print("<h1>MONEY RECEIVED</h1>");
+			pw.close();
+			}else {
+				pw.print("<h1>ERROR ! CONTACT NEAREST BRANCH OR CALL OUR CUSTOMER HELPLINE</h1>");
+				pw.close();
+			}
+		}
+		
 		else if(Action.equals("paybill"))
 		{
 			//Pay Credit card bill

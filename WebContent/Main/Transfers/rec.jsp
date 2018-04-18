@@ -11,24 +11,13 @@
 <div id="layer5" style="position: absolute; width: 750px; height: 379px; z-index: 2; left: 138px; top: 128px; background-image:url('background.png')">
 <!-- #BeginEditable "content" -->
 
-<%
-//Getting the data from the servlet.
- 
-HttpSession s =(HttpSession) request.getSession();
-String AccountNumber = s.getAttribute("account").toString();
 
-String saving = request.getAttribute("saving").toString();
-String current = request.getAttribute("current").toString();
- 
- 
-%>
-<h3>limit for transfer = <%=current%></h3>
-<form action="/CentennialBank/root?action=A2E" method="post">
+<form action="/CentennialBank/root?action=rec" method="post">
 
 <table>
 <tr>
 <td>
-Enter Receiver's Phone Number: 
+Your Phone Number
 </td>
 <td>
    <input type="text" name="phone">
@@ -38,35 +27,22 @@ Enter Receiver's Phone Number:
 
 <tr>
 <td>
-The Amount to be paid:
+Password 
 </td>
 <td>
-<input type="text" id="amount" name="amount">
+   <input type="text" name="password">
 </td>
 </tr>
 
 <tr>
 <td>
-Enter Password:
-</td>
-<td>
-<input type="password" id="password" name="password">
+<input type="submit"/>
 </td>
 </tr>
 
-<tr>
-<td>
-<input type="submit" id="submit">
-</td>
-</tr>
 </table>
-
 </form>
 </div>
-</body>
-
-
-
 
 </body>
 </html>

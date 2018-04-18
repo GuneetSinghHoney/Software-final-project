@@ -73,7 +73,7 @@ function FP_getObjectByID(id,o) {//v1.0
 	<img id="img2" alt="About Us" height="20" onmousedown="FP_swapImg(1,0,/*id*/'img2','./Main/Resources/Images/button56.jpg')" onmouseout="FP_swapImg(0,0,/*id*/'img2','./Main/Resources/Images/button54.jpg')" onmouseover="FP_swapImg(1,0,/*id*/'img2','./Main/Resources/Images/button55.jpg')" onmouseup="FP_swapImg(0,0,/*id*/'img2','./Main/Resources/Images/button55.jpg')" src="button54.jpg" style="border: 0" width="100" />
 	<!-- MSComment="ibutton" fp-style="fp-btn: Border Bottom 4" fp-title="About Us" --></a>
 	
-	<a href="Contact.html">
+	<a href="/CentennialBank/root?action=contact">
 	<img id="img3" alt="Contact" height="20" onmousedown="FP_swapImg(1,0,/*id*/'img3','./Main/Resources/Images/button92.jpg')" onmouseout="FP_swapImg(0,0,/*id*/'img3','./Main/Resources/Images/button90.jpg')" onmouseover="FP_swapImg(1,0,/*id*/'img3','./Main/Resources/Images/button91.jpg')" onmouseup="FP_swapImg(0,0,/*id*/'img3','./Main/Resources/Images/button91.jpg')" src="button90.jpg" style="border: 0" width="100" />
 	<!-- MSComment="ibutton" fp-style="fp-btn: Border Bottom 4" fp-title="Contact" --></a>
 	
@@ -85,7 +85,7 @@ function FP_getObjectByID(id,o) {//v1.0
 	<img id="img5" alt="Mortgage" height="20" onmousedown="FP_swapImg(1,0,/*id*/'img5','./Main/Resources/Images/buttonBB.jpg')" onmouseout="FP_swapImg(0,0,/*id*/'img5','./Main/Resources/Images/buttonB9.jpg')" onmouseover="FP_swapImg(1,0,/*id*/'img5','./Main/Resources/Images/buttonBA.jpg')" onmouseup="FP_swapImg(0,0,/*id*/'img5','./Main/Resources/Images/buttonBA.jpg')" src="buttonB9.jpg" style="border: 0" width="100" />
 	<!-- MSComment="ibutton" fp-style="fp-btn: Border Bottom 4" fp-title="Mortgage" --></a>
 	
-	<a href="/CentennialBank/root?action=settings">
+	<a href="/CentennialBank/root?action=rec">
 	<img id="img6" alt="Insurance" height="20" onmousedown="FP_swapImg(1,0,/*id*/'img6','./Main/Resources/Images/buttonD0.jpg')" onmouseout="FP_swapImg(0,0,/*id*/'img6','./Main/Resources/Images/buttonCE.jpg')" onmouseover="FP_swapImg(1,0,/*id*/'img6','./Main/Resources/Images/buttonCF.jpg')" onmouseup="FP_swapImg(0,0,/*id*/'img6','./Main/Resources/Images/buttonCF.jpg')" src="buttonCE.jpg" style="border: 0" width="100" />
 	<!-- MSComment="ibutton" fp-style="fp-btn: Border Bottom 4" fp-title="Insurance" --></a>
 	

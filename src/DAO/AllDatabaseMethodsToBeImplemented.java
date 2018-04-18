@@ -37,4 +37,10 @@ public interface AllDatabaseMethodsToBeImplemented
 	//add feedback
 	void feedback(String account, String feedback);
 	
+	//send intrac
+	void sendMoney(String account, String phone, String password, int amount);
+	
+	//receive money 
+	boolean receiveMoney(String account, String password, String phone);
+	
 }

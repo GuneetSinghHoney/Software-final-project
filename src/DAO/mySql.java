@@ -392,7 +392,7 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 			 
 	        stmt = conn.createStatement();
 		
-	        String query = "select * from User where account ='"+accountNumber+"'";
+	        String query = "select * from bank.user where account ='"+accountNumber+"'";
 	        
 	        ResultSet rs =  stmt.executeQuery(query);
 	        
@@ -442,6 +442,54 @@ public class mySql implements AllDatabaseMethodsToBeImplemented {
 		
 	}
 
+	@Override
+	public void sendMoney(String account, String phone, String password, int amount) {
+	
+		try {
+		conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+		 
+        stmt = conn.createStatement();
+        String query = "insert into bank.intrac values('"+phone+"',"+amount+",'"+password+"')";
+        stmt.execute(query);
+        
+        System.out.println("The intrac is sent !");
+        
+        betweenAccountsTransfer(new BigDecimal("-"+amount+""), "current", account);
+        
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public boolean receiveMoney(String account, String password,String phone) {
+		try {
+			conn=  DriverManager.getConnection(DB_URL,USER,PASS);
+			 
+	        stmt = conn.createStatement();
+	        String query = "select * from intrac where phone='"+phone+"'";
+	        ResultSet rs = stmt.executeQuery(query);
+	        rs.next();
+	        if(rs.getString(1).toString().equals(phone))
+	        {
+	        	if(rs.getString(3).toString().equals(password))
+	        	{
+	        		betweenAccountsTransfer(new BigDecimal((rs.getString(2).toString())), "current", account);
+	        		System.out.println("intac accepted ");
+	        		return true;
+	        	}
+	        }
+	        return false;
+	       
+		
+	}catch(Exception e)
+		{
+		e.printStackTrace();
+		}
+		return false;
+	}
 	 
 
 }
